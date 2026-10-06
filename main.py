@@ -1,9 +1,10 @@
 import os
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 
 app = FastAPI(
@@ -24,6 +25,27 @@ app.add_middleware(
 
 # ==========================================
 # Dynamic Data & Utility Endpoints
+
+PUBLIC_DIR = Path(__file__).parent / "public"
+
+HTML_MAP = {
+    "index.html": "/",
+    "about.html": "/about",
+    "projects.html": "/projects",
+    "experience.html": "/experience",
+    "contact.html": "/contact",
+    "attributes.html": "/attributes",
+    "career-stats.html": "/career-stats",
+}
+
+LEGACY_MAP = {
+    "hero_page.html": "index.html",
+    "about_me.html": "about.html",
+    "project.html": "projects.html",
+    "contect_and_match_record.html": "contact.html",
+    "transfer_desk.html": "contact.html",
+    "atribute.html": "attributes.html",
+}
 # ==========================================
 
 @app.get("/api/projects", summary="Tactical Projects Registry")
@@ -331,3 +353,39 @@ async def download_cv():
 @app.get("/health", summary="Health Check")
 async def health_check():
     return {"status": "ok", "service": "portfolio-backend"}
+
+
+@app.get("/{path:path}")
+async def serve_html(path: str):
+    """Serve static HTML pages from the public directory."""
+    if path.startswith("/"):
+        path = path[1:]
+    # Check legacy .html aliases first
+    if path in LEGACY_MAP:
+        template_name = LEGACY_MAP[path]
+        return FileResponse(PUBLIC_DIR / HTML_MAP[template_name])
+    # Then check direct HTML pages
+    if path in HTML_MAP:
+        return FileResponse(PUBLIC_DIR / HTML_MAP[path])
+    # Otherwise 404
+    return JSONResponse({"detail": "Not found"}, status_code=404)
+
+
+@app.post("/api/transfer-inquiries", summary="Transfer Inquiry")
+async def create_transfer_inquiry(
+    *,
+    caller_name: str = Form(...),
+    caller_org: Optional[str] = Form(None),
+    caller_email: str = Form(...),
+    engagement_type: str = Form(...),
+    contract_terms: str = Form(...),
+):
+    """Accept transfer inquiry submission."""
+    return {
+        "id": 1,
+        "caller_name": caller_name,
+        "caller_org": caller_org,
+        "caller_email": caller_email,
+        "engagement_type": engagement_type,
+        "contract_terms": contract_terms,
+    }
