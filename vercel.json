@@ -1,0 +1,29 @@
+{
+  "buildCommand": "pip install -r requirements.txt",
+  "devCommand": "uvicorn main:app --reload",
+  "installCommand": "pip install -r requirements.txt",
+  "framework": null,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/about", "destination": "/public/about.html" },
+    { "source": "/projects", "destination": "/public/projects.html" },
+    { "source": "/career-stats", "destination": "/public/career-stats.html" },
+    { "source": "/experience", "destination": "/public/experience.html" },
+    { "source": "/contact", "destination": "/public/contact.html" },
+    { "source": "/attributes", "destination": "/public/attributes.html" },
+    { "source": "/api/(.*)", "destination": "/api/index.py" }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.db
+.pytest_cache
+.pytest_cache/**
+html/**
+static/**
+database.py
+test_*.py
+smoke_test.py
+PROGRESS.md
+SPEC.md
+README.md
