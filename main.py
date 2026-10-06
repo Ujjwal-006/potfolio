@@ -364,9 +364,18 @@ async def serve_html(path: str):
     if path in LEGACY_MAP:
         template_name = LEGACY_MAP[path]
         return FileResponse(PUBLIC_DIR / HTML_MAP[template_name])
-    # Then check direct HTML pages
+    # Check direct HTML pages (with .html extension)
     if path in HTML_MAP:
         return FileResponse(PUBLIC_DIR / HTML_MAP[path])
+    # Try without .html extension
+    path_no_ext = path.rstrip("/")
+    html_with_ext = path_no_ext + ".html"
+    if html_with_ext in HTML_MAP:
+        return FileResponse(PUBLIC_DIR / HTML_MAP[html_with_ext])
+    # Try legacy alias without .html
+    for legacy_path, template_name in LEGACY_MAP.items():
+        if path == legacy_path.rstrip(".html"):
+            return FileResponse(PUBLIC_DIR / HTML_MAP[template_name])
     # Otherwise 404
     return JSONResponse({"detail": "Not found"}, status_code=404)
 
