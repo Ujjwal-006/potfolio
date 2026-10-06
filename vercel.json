@@ -3,6 +3,7 @@
   "devCommand": "uvicorn main:app --reload",
   "installCommand": "pip install --break-system-packages -r requirements.txt",
   "framework": null,
+  "cleanUrls": false,
   "functions": {
     "api/index.py": {
       "maxDuration": 30
